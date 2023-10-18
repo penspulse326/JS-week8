@@ -4,6 +4,76 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Online Todo List | 註冊</title>
+    <link rel="stylesheet" href="../../src/styles/all.css" />
   </head>
-  <body></body>
+  <body class="bg-primary font-sans text-dark font-bold">
+    <main>
+      <div
+        class="container mx-auto px-8 max-w-5xl h-[100vh] text-center lg:grid lg:grid-cols-12 lg:gap-5 lg:items-center"
+      >
+        <div class="col-span-5 col-start-2 flex flex-col">
+          <h1>
+            <a class="logo mt-12 lg:mt-0" href="../"> Online Todo List </a>
+          </h1>
+          <img
+            class="hidden mt-4 lg:block"
+            src="../../src/images/home_illustration.svg"
+            alt=""
+          />
+        </div>
+        <div class="col-span-4 col-start-8">
+          <h2 class="mt-4 text-xl">註冊帳號</h2>
+          <form class="form-signup" action="/signup" method="post">
+            <ul class="flex flex-col gap-4 mt-8 mx-auto max-w-xs">
+              <li>
+                <p class="mb-1 text-sm text-left">Email</p>
+                <input
+                  class="px-4 py-3 w-full rounded-[10px]"
+                  type="text"
+                  name="email"
+                />
+                <p class="input-alert"></p>
+              </li>
+              <li>
+                <p class="mb-1 text-sm text-left">您的暱稱</p>
+                <input
+                  class="px-4 py-3 w-full rounded-[10px]"
+                  type="text"
+                  name="nickname"
+                />
+                <p class="input-alert"></p>
+              </li>
+              <li>
+                <p class="mb-1 text-sm text-left">密碼</p>
+                <input
+                  class="px-4 py-3 w-full rounded-[10px]"
+                  type="password"
+                  name="password"
+                />
+                <p class="input-alert"></p>
+              </li>
+              <li>
+                <p class="mb-1 text-sm text-left">再次輸入密碼</p>
+                <input
+                  class="px-4 py-3 w-full rounded-[10px]"
+                  type="password"
+                  name="passwordCheck"
+                />
+                <p class="input-alert"></p>
+              </li>
+            </ul>
+            <button
+              class="mt-3 lg:mt-6 px-12 py-3 bg-dark rounded-[10px] text-white cursor-pointer hover:ease-in hover:text-primary hover:bg-black duration-300"
+              type="submit"
+            >
+              註冊帳號
+            </button>
+          </form>
+          <a class="block mt-6 hover:text-black duration-300" href="/JS-week8"
+            >登入</a
+          >
+        </div>
+      </div>
+    </main>
+  </body>
 </html>

@@ -4,6 +4,68 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Online Todo List</title>
+    <link rel="stylesheet" href="../../src/styles/all.css" />
   </head>
-  <body></body>
+  <body class="relative bg-primary font-sans text-dark overflow-x-hidden">
+    <nav class="flex justify-between items-center px-8 py-4">
+      <h1>
+        <a class="logo max-w-[242px] text-4xl" href="../"> Online Todo List </a>
+      </h1>
+      <div>
+        <span class="nav-nickname hidden lg:inline-block font-bold"></span>
+        <a class="btn-logout lg:ml-6 text-sm" href="/logout">登出</a>
+      </div>
+    </nav>
+    <main class="relative mx-auto px-8 max-w-[500px]">
+      <section class="relative container mx-auto lg:mt-6">
+        <div class="relative">
+          <input
+            class="input-add relative px-4 py-3 w-full rounded-[10px] shadow-2xl"
+            type="text"
+            name="new-todo"
+            placeholder="新增代辦事項"
+          />
+          <a
+            class="btn-add absolute top-1 right-1 w-10 h-10 rounded-[10px] bg-dark text-white hover:bg-black duration-300"
+            href="#"
+          >
+            <img class="p-[10px]" src="../../src/images/add.svg" alt="" />
+          </a>
+        </div>
+      </section>
+      <section
+        class="relative section-todo hidden mx-auto mt-4 mb-8 rounded-[10px] bg-white shadow-2xl text-sm overflow-hidden z-10"
+      >
+        <ul class="tabs-todo flex w-full text-center font-bold cursor-pointer">
+          <li class="btn-todoTab-active">全部</li>
+          <li class="btn-todoTab-inactive">待完成</li>
+          <li class="btn-todoTab-inactive">已完成</li>
+        </ul>
+        <div class="px-4 lg:px-6">
+          <ul class="list-todo flex flex-col gap-4 mt-6"></ul>
+          <div class="flex justify-between my-8">
+            <span class="todo-nums"></span>
+            <a
+              class="btn-delete text-gray-400 hover:text-dark hover:font-bold duration-300"
+              href="#"
+              >清除已完成項目</a
+            >
+          </div>
+        </div>
+      </section>
+      <section
+        class="section-empty flex flex-col items-center mx-auto mt-[60px]"
+      >
+        <p class="mb-4">目前尚無待辦事項</p>
+        <img
+          class="hidden lg:block"
+          src="../../src/images/empty_illustration.svg"
+          alt=""
+        />
+      </section>
+    </main>
+    <div
+      class="hidden lg:block fixed -left-[50%] -bottom-[52.5%] w-[200%] h-[100%] bg-white -rotate-6 -z-10"
+    ></div>
+  </body>
 </html>
