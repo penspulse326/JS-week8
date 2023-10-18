@@ -3,6 +3,7 @@ import {
   deleteCompleted,
   deleteSingle,
   showTodo,
+  toggleTabs,
   toggleTodo,
 } from "./controllers/todoController";
 import authCheck from "./utils/authCheck";
@@ -26,11 +27,12 @@ export default async function todoPage() {
   }
 
   // 顯示 todo 內容
-  showTodo();
+  showTodo("全部");
 
   // 監聽 todo 互動
   addTodo();
   toggleTodo();
+  toggleTabs();
   deleteSingle();
   deleteCompleted();
 

@@ -4,6 +4,7 @@ const axios = require("axios");
 const url = "https://todoo.5xcamp.us/todos/";
 const auth = localStorage.getItem("todo");
 const list = document.querySelector(".list-todo")!;
+let tab = "全部";
 let todoData: any = null; // 存請求回傳的 todo
 
 // 監聽 HTML Element 行為放這裡
@@ -33,7 +34,7 @@ export function addTodo() {
         headers: { Authorization: auth },
       })
       .then(() => {
-        showTodo();
+        showTodo(tab);
       })
       .catch((err: any) => {
         console.clear(); // 清除 axios 的報錯 防止 API 網址暴露
@@ -43,7 +44,7 @@ export function addTodo() {
 }
 
 // 顯示 todo
-export async function showTodo() {
+export async function showTodo(tab: string) {
   const todoSection = document.querySelector(".section-todo")!; // todo 列表
   const emptySection = document.querySelector(".section-empty")!; // 圖案
   await getTodo();
@@ -51,7 +52,7 @@ export async function showTodo() {
   // 依照 todo 有沒有東西顯示區塊
   if (todoData.length) {
     list.innerHTML = "";
-    todoData.forEach((item: any) => (list.innerHTML += listCard(item)));
+    todoData.forEach((item: any) => (list.innerHTML += listCard(item, tab)));
 
     // 有待辦項目就隱藏圖案
     todoSection.classList.remove("hidden");
@@ -88,7 +89,7 @@ export function toggleTodo() {
             headers: { Authorization: auth },
           }
         )
-        .then(() => showTodo())
+        .then(() => showTodo(tab))
         .catch(() => {
           console.clear();
           alert("變更狀態時發生錯誤，請稍後再試！");
@@ -142,6 +143,32 @@ export function deleteCompleted() {
     });
   });
 }
+
+// 更改 todo 分類頁籤狀態
+export function toggleTabs() {
+  const tabs = document.querySelector(".tabs-todo")!;
+
+  // 監聽 tabs 點擊
+  tabs.addEventListener("click", (e: Event) => {
+    const target = e.target as HTMLElement;
+
+    tabs.querySelectorAll("li").forEach((item) => {
+      if (item.textContent === target.textContent) {
+        tab = target.textContent!;
+        showTodo(tab); // 根據 tab 標籤顯示 todo
+
+        // 更改樣式
+        item.classList.remove("btn-todoTab-inactive");
+        item.classList.add("btn-todoTab-active");
+      } else {
+        // 更改樣式
+        item.classList.remove("btn-todoTab-active");
+        item.classList.add("btn-todoTab-inactive");
+      }
+    });
+  });
+}
+
 // 請求行為的放這裡
 // 請求 todo 資料
 export async function getTodo() {
@@ -166,7 +193,7 @@ async function deleteTodo(id: string) {
     .delete(url + id, {
       headers: { Authorization: auth },
     })
-    .then(() => showTodo())
+    .then(() => showTodo(tab))
     .catch(() => {
       console.clear();
       alert("刪除時發生錯誤，請稍後再試！");
