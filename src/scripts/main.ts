@@ -16,3 +16,16 @@ if (path === "/js-week8/signup/") {
 if (path === "/js-week8/todo/") {
   todoPage();
 }
+
+// // 本機測試用
+// if (path === "/") {
+//   loginPage();
+// }
+
+// if (path === "/signup/") {
+//   signupPage();
+// }
+
+// if (path === "/todo/") {
+//   todoPage();
+// }
