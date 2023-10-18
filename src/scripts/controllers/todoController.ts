@@ -70,6 +70,33 @@ export async function showTodo() {
   todoNums.textContent = `${todoTotal} 個待完成項目`;
 }
 
+// 更改 todo 項目狀態
+export function toggleTodo() {
+  // 捕捉 checkbox 冒泡
+  list.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+
+    // 確定是 checkbox 才執行
+    if (target.type === "checkbox") {
+      const id = target.parentElement?.parentElement?.getAttribute("id");
+
+      axios
+        .patch(
+          url + id + "/toggle",
+          {}, // 這裡要加空物件不然 patch 結果不正確
+          {
+            headers: { Authorization: auth },
+          }
+        )
+        .then(() => showTodo())
+        .catch(() => {
+          console.clear();
+          alert("變更狀態時發生錯誤，請稍後再試！");
+        });
+    }
+  });
+}
+
 // 刪除單個 todo
 export function deleteSingle() {
   // 監聽整個 list 捕捉冒泡
@@ -87,20 +114,24 @@ export function deleteSingle() {
 // 刪除已完成項目
 export function deleteCompleted() {
   const deleteBtn = document.querySelector(".btn-delete")!;
-  let isHandlingDelete = false;
-  let handlingChecker = 0;
+  let isHandlingDelete = false; // 判斷是否還在處理刪除請求
+  let handlingChecker = 0; // 計算刪除請求的完成次數
 
+  // 監聽刪除按鈕
   deleteBtn.addEventListener("click", (e: Event) => {
     e.preventDefault();
 
     if (isHandlingDelete) return;
 
+    // completed_at 如果不是 null 表示已完成，是要被刪除的項目
     const targetList = todoData.filter(
       (item: any) => item.completed_at !== null
     );
 
+    // 因為 deleteTodo 為非同步函式，所以用 then 來確認已完成請求並 ++handlingChecker 計數
+    // 當 handlingChecker 與 targetList.length 表示所有的刪除請求都已完成
     targetList.forEach((item: any) => {
-      isHandlingDelete = true;
+      isHandlingDelete = true; // 改變狀態
 
       deleteTodo(item.id).then(() => ++handlingChecker);
 

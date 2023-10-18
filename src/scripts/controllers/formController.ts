@@ -43,7 +43,8 @@ export function loginController(form: HTMLFormElement) {
 // 登入請求
 function login(email: string, password: string) {
   const repoUrl = "/js-week8";
-  // 測試用url
+  //測試用url
+  // const path = window.location.pathname;
   // const target = path === "/" ? "." : "..";
   axios
     .post(apiUrl + "/sign_in", {
