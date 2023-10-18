@@ -1,5 +1,7 @@
-export default function listCard(item: any) {
-  return `<li class="card-todo" id=${item.id}>
+export default function listCard(item: any, tab: string) {
+  return `<li class="card-todo ${
+    tab === "待完成" && item.completed_at && "hidden"
+  } ${tab === "已完成" && !item.completed_at && "hidden"}" id=${item.id}>
               <label class="flex items-center cursor-pointer">
                 <input class="input-check hidden" type="checkbox" ${
                   item.completed_at && "checked"
