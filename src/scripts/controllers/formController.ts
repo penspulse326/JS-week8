@@ -42,8 +42,9 @@ export function loginController(form: HTMLFormElement) {
 
 // 登入請求
 function login(email: string, password: string) {
-  const path = window.location.pathname;
-  const target = path === "/" ? "." : "..";
+  const repoUrl = "/js-week8";
+  // 測試用url
+  // const target = path === "/" ? "." : "..";
   axios
     .post(apiUrl + "/sign_in", {
       user: {
@@ -53,7 +54,7 @@ function login(email: string, password: string) {
     })
     .then((res: any) => {
       localStorage.setItem("todo", res.headers.authorization);
-      window.location.href = `${target}/todo/?nickname=${res.data.nickname}`; // 帶入 query string 讓 todo 頁面可以抓到 nickname
+      window.location.href = `${repoUrl}/todo/?nickname=${res.data.nickname}`; // 帶入 query string 讓 todo 頁面可以抓到 nickname
     })
     .catch((err: any) => {
       console.clear(); // 清除 axios 的報錯 防止 API 網址暴露

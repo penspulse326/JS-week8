@@ -1,4 +1,9 @@
-import { addTodo, showTodo } from "./controllers/todoController";
+import {
+  addTodo,
+  deleteCompleted,
+  deleteSingle,
+  showTodo,
+} from "./controllers/todoController";
 import authCheck from "./utils/authCheck";
 
 export default async function todoPage() {
@@ -24,6 +29,8 @@ export default async function todoPage() {
 
   // 監聽 todo 互動
   addTodo();
+  deleteSingle();
+  deleteCompleted();
 
   // 監聽登出
   const logout: HTMLLinkElement | null = document.querySelector(".btn-logout");
