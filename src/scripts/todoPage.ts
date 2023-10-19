@@ -42,6 +42,6 @@ export default async function todoPage() {
     e.preventDefault();
 
     localStorage.clear();
-    window.location.href = "/JS-week8";
+    window.location.href = "../";
   });
 }
