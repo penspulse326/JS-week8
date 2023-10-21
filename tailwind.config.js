@@ -12,7 +12,7 @@ module.exports = {
       },
 
       backgroundImage: {
-        logo: "url('../images/logo_lg.svg')",
+        logo: "url('../src/images/logo_lg.svg')",
       },
     },
     fontFamily: {
