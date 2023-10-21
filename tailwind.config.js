@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./*.html", "./*/*.html", "./src/**/*.js"],
+  content: ["./*.html", "./*/*.html", "./dist/*.js"],
   theme: {
     extend: {
       colors: {
@@ -12,7 +12,7 @@ module.exports = {
       },
 
       backgroundImage: {
-        logo: "url('../images/logo_lg.svg')",
+        logo: "url('../src/images/logo_lg.svg')",
       },
     },
     fontFamily: {

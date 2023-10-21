@@ -580,7 +580,7 @@ video {
   display: block;
   overflow: hidden;
   white-space: nowrap;
-  background-image: url('../images/logo_lg.svg');
+  background-image: url('../src/images/logo_lg.svg');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
