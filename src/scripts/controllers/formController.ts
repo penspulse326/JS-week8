@@ -1,37 +1,43 @@
-import { async } from "../../../node_modules/validate.js/validate";
+import navigate from "../utils/navigate";
+import { setStorageItem } from "../utils/storageAPI";
 
 const axios = require("axios");
-const apiUrl = "https://todoo.5xcamp.us/users";
 const Swal = require("sweetalert2");
 
 // 登入請求
-async function sendLoginRequest(data: UserData) {
+async function sendLoginRequest(data: PostData) {
   const repoUrl = "/js-week8";
   //測試用url
   // const path = window.location.pathname;
   // const target = path === "/" ? "." : "..";
 
   try {
-    return axios.post(`${apiUrl}/sign_in`, data);
+    return axios.post(process.env.API_LOGIN, data);
   } catch (err) {
     throw err;
   }
 }
 
 // 登入行為
-async function login(data: UserData) {
+async function login(data: PostData) {
+  const repoUrl = "/js-week8";
+  //測試用url
+  const path = window.location.pathname;
+  const target = path === "/" ? "." : "..";
+
   try {
     const res: ResData = await sendLoginRequest(data);
-    localStorage.setItem("todo", res.headers.authorization);
-    //window.location.href = `${repoUrl}/todo/?nickname=${res.data.nickname}`;
+    setStorageItem("todoToken", res.headers.authorization);
+    setStorageItem("nickname", res.data.nickname!);
+    navigate(`${target}/todo/`);
   } catch (err: any) {
-    showAlert(err.response.data.message, "電子信箱或密碼錯誤。");
+    Swal.fire(err.response.data.message, "電子信箱或密碼錯誤。", "error");
   }
 }
 
 // 登入事件處理
 export function loginController(form: HTMLFormElement) {
-  const data: UserData = {
+  const data: PostData = {
     user: {
       email: form.email.value,
       password: form.password.value,
@@ -42,14 +48,9 @@ export function loginController(form: HTMLFormElement) {
 }
 
 // 註冊請求
-async function sendSignupRequest(data: UserData) {
-  const repoUrl = "/js-week8";
-  //測試用url
-  // const path = window.location.pathname;
-  // const target = path === "/" ? "." : "..";
-
+async function sendSignupRequest(data: PostData) {
   try {
-    return await axios.post(apiUrl, data);
+    return axios.post(process.env.API_SIGNUP, data);
   } catch (err) {
     throw err;
   }
@@ -57,7 +58,7 @@ async function sendSignupRequest(data: UserData) {
 
 // 註冊事件處理 註冊成功會透過呼叫 login 導向到 todo 頁面
 export async function signupController(form: HTMLFormElement) {
-  const data: UserData = {
+  const data: PostData = {
     user: {
       email: form.email.value,
       nickname: form.nickname.value,
@@ -66,29 +67,21 @@ export async function signupController(form: HTMLFormElement) {
   };
 
   try {
-    const res: ResData = await sendSignupRequest(data);
-    localStorage.setItem("todo", res.headers.authorization);
+    sendSignupRequest(data);
     login(data);
   } catch (err: any) {
-    showAlert(err.response.data.message, err.response.data.error);
+    Swal.fire(err.response.data.message, err.response.data.error[0], "error");
   }
 }
 
-const showAlert = (title: string, text: string) =>
-  Swal.fire({
-    title,
-    text,
-    icon: "error",
-    confirmButtonText: "確認",
-  });
-
 // 型別定義
 type UserData = {
-  user: {
-    email: string;
-    password: string;
-    nickname?: string;
-  };
+  email: string;
+  password: string;
+  nickname?: string;
+};
+type PostData = {
+  user: UserData;
 };
 
 type ResData = {

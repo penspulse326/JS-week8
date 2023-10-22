@@ -1,201 +1,213 @@
 import listCard from "../components/listCard";
+import { $, $all } from "../utils/selector";
 
 const axios = require("axios");
-const url = "https://todoo.5xcamp.us/todos/";
-const auth = localStorage.getItem("todo");
-const list = document.querySelector(".list-todo")!;
-let tab = "全部";
-let todoData: any = null; // 存請求回傳的 todo
+const Swal = require("sweetalert2");
 
-// 監聽 HTML Element 行為放這裡
-// 新增 todo
-export function addTodo() {
-  const addBtn = document.querySelector(".btn-add")!;
-  const input: HTMLInputElement = document.querySelector(".input-add")!;
+class Todo {
+  payload: { headers: { Authorization: string } };
+  todoData: TodoItemType[];
+  tab: string;
 
-  // 監聽 add 按鈕
-  addBtn.addEventListener("click", () => {
-    if (!input || !input.value) {
-      alert("代辦內容不能為空");
-      return;
-    }
-
-    // 要打給 API 的資料
-    const data = {
-      todo: {
-        content: input.value,
-      },
-    };
-
-    input.value = ""; // 存完資料記得清空 input
-
-    axios
-      .post(url, data, {
-        headers: { Authorization: auth },
-      })
-      .then(() => {
-        showTodo(tab);
-      })
-      .catch((err: any) => {
-        console.clear(); // 清除 axios 的報錯 防止 API 網址暴露
-        console.log(err);
-      });
-  });
-}
-
-// 顯示 todo
-export async function showTodo(tab: string) {
-  const todoSection = document.querySelector(".section-todo")!; // todo 列表
-  const emptySection = document.querySelector(".section-empty")!; // 圖案
-  await getTodo();
-
-  // 依照 todo 有沒有東西顯示區塊
-  if (todoData.length) {
-    list.innerHTML = "";
-    todoData.forEach((item: any) => (list.innerHTML += listCard(item, tab)));
-
-    // 有待辦項目就隱藏圖案
-    todoSection.classList.remove("hidden");
-    emptySection.classList.add("hidden");
-  } else {
-    // 沒有待辦項目就顯示圖案
-    todoSection.classList.add("hidden");
-    emptySection.classList.remove("hidden");
+  constructor(auth: string) {
+    this.payload = { headers: { Authorization: auth } };
+    this.todoData = [];
+    this.tab = "all";
   }
 
-  // 顯示待完成項目
-  const todoNums = document.querySelector(".todo-nums")!;
-  const todoTotal = todoData.filter(
-    (item: any) => item.completed_at === null
-  ).length;
-  todoNums.textContent = `${todoTotal} 個待完成項目`;
-}
-
-// 更改 todo 項目狀態
-export function toggleTodo() {
-  // 捕捉 checkbox 冒泡
-  list.addEventListener("change", (e: Event) => {
-    const target = e.target as HTMLInputElement;
-
-    // 確定是 checkbox 才執行
-    if (target.type === "checkbox") {
-      const id = target.parentElement?.parentElement?.getAttribute("id");
-
-      axios
-        .patch(
-          url + id + "/toggle",
-          {}, // 這裡要加空物件不然 patch 結果不正確
-          {
-            headers: { Authorization: auth },
-          }
-        )
-        .then(() => showTodo(tab))
-        .catch(() => {
-          console.clear();
-          alert("變更狀態時發生錯誤，請稍後再試！");
-        });
+  // 請求 todo 資料
+  async getTodo() {
+    try {
+      return axios.get(process.env.API_TODO, this.payload);
+    } catch (err) {
+      throw err;
     }
-  });
-}
-
-// 刪除單個 todo
-export function deleteSingle() {
-  // 監聽整個 list 捕捉冒泡
-  list.addEventListener("click", (e: Event) => {
-    // 確定使用者按到 X 才執行
-    const target = e.target as HTMLElement;
-    if (target.classList.contains("btn-close")) {
-      const id = target.parentElement!.id;
-
-      deleteTodo(id);
+  }
+  // 顯示 todo
+  async showTodo(tab: string) {
+    try {
+      const res: ResType = await this.getTodo();
+      this.todoData = res.data.todos;
+    } catch (err) {
+      Swal.fire("讀取失敗", "發生錯誤，請重新整理或稍後再試。", "error");
     }
-  });
-}
 
-// 刪除已完成項目
-export function deleteCompleted() {
-  const deleteBtn = document.querySelector(".btn-delete")!;
-  let isHandlingDelete = false; // 判斷是否還在處理刪除請求
-  let handlingChecker = 0; // 計算刪除請求的完成次數
+    $(".list-todo")!.innerHTML = "";
 
-  // 監聽刪除按鈕
-  deleteBtn.addEventListener("click", (e: Event) => {
-    e.preventDefault();
-
-    if (isHandlingDelete) return;
-
-    // completed_at 如果不是 null 表示已完成，是要被刪除的項目
-    const targetList = todoData.filter(
-      (item: any) => item.completed_at !== null
+    // 依照 todoData 有沒有東西顯示列表或圖案
+    if (!this.todoData.length) {
+      $(".section-todo")!.classList.add("hidden");
+      $(".section-empty")!.classList.remove("hidden");
+      return;
+    }
+    this.todoData.forEach(
+      (item) => ($(".list-todo")!.innerHTML += listCard(item, tab))
     );
 
-    // 因為 deleteTodo 為非同步函式，所以用 then 來確認已完成請求並 ++handlingChecker 計數
-    // 當 handlingChecker 與 targetList.length 表示所有的刪除請求都已完成
-    targetList.forEach((item: any) => {
-      isHandlingDelete = true; // 改變狀態
+    $(".section-todo")!.classList.remove("hidden");
+    $(".section-empty")!.classList.add("hidden");
 
-      deleteTodo(item.id).then(() => ++handlingChecker);
+    // 顯示待完成項目
+    const todoTotal = this.todoData.filter(
+      (item: TodoItemType) => item.completed_at === null
+    ).length;
+    $(".todo-nums")!.textContent = `${todoTotal} 個待完成項目`;
+  }
+  // 請求新增 todo
+  async sendAddRequest(data: AddItemType) {
+    try {
+      return axios.post(process.env.API_TODO, data, this.payload);
+    } catch (err) {
+      throw err;
+    }
+  }
+  // 新增 todo
+  addTodo() {
+    $(".btn-add")!.on("click", async () => {
+      const input: HTMLInputElement = $(".input-add")!;
+      const isInputValid = input.value;
 
-      if (handlingChecker === targetList.length) {
-        handlingChecker = 0;
-        isHandlingDelete = false;
+      if (!isInputValid) {
+        Swal.fire("新增失敗", "代辦內容不能為空", "error");
+        return;
+      }
+
+      const data: AddItemType = {
+        todo: {
+          content: input.value,
+        },
+      };
+
+      input.value = ""; // 存完資料記得清空 input
+
+      try {
+        await this.sendAddRequest(data);
+        this.showTodo("全部");
+      } catch (err) {
+        Swal.fire("新增失敗", "發生錯誤，請稍後再試", "error");
       }
     });
-  });
-}
+  }
+  // 請求更改 todo 項目狀態
+  async sendToggleRequest(id: string) {
+    try {
+      return axios.patch(
+        `${process.env.API_TODO}/${id}/toggle`,
+        {},
+        this.payload
+      );
+    } catch (err) {
+      throw err;
+    }
+  }
+  // 更改 todo 項目狀態
+  toggleTodo() {
+    $(".list-todo")!.on("change", async (e: Event) => {
+      const isInputElement = e.target instanceof HTMLInputElement;
 
-// 更改 todo 分類頁籤狀態
-export function toggleTabs() {
-  const tabs = document.querySelector(".tabs-todo")!;
+      if (isInputElement && e.target.type === "checkbox") {
+        const id = e.target!.parentElement!.parentElement!.getAttribute("id")!;
 
-  // 監聽 tabs 點擊
-  tabs.addEventListener("click", (e: Event) => {
-    const target = e.target as HTMLElement;
-
-    tabs.querySelectorAll("li").forEach((item) => {
-      if (item.textContent === target.textContent) {
-        tab = target.textContent!;
-        showTodo(tab); // 根據 tab 標籤顯示 todo
-
-        // 更改樣式
-        item.classList.remove("btn-todoTab-inactive");
-        item.classList.add("btn-todoTab-active");
-      } else {
-        // 更改樣式
-        item.classList.remove("btn-todoTab-active");
-        item.classList.add("btn-todoTab-inactive");
+        try {
+          await this.sendToggleRequest(id);
+          this.showTodo(this.tab);
+        } catch (err) {
+          Swal.fire("更改失敗", "發生錯誤，請稍後再試！", "error");
+        }
       }
     });
-  });
+  }
+  // 更改 todo 分類頁籤狀態
+  toggleTabs() {
+    $(".tabs-todo")!.on("click", (e: Event) => {
+      const isTab = e.target instanceof HTMLLIElement;
+
+      $all(".tabs-todo li")!.forEach((item) => {
+        if (isTab && item.textContent === e.target.textContent) {
+          this.tab = e.target.getAttribute("tab")!;
+          this.showTodo(this.tab); // 根據 tab 標籤顯示 todo
+
+          item.classList.remove("btn-todoTab-inactive");
+          item.classList.add("btn-todoTab-active");
+        } else {
+          item.classList.remove("btn-todoTab-active");
+          item.classList.add("btn-todoTab-inactive");
+        }
+      });
+    });
+  }
+  // 請求 todo 刪除
+  async sendDeleteRequest(id: string) {
+    try {
+      return await axios.delete(`${process.env.API_TODO}/${id}`, this.payload);
+    } catch (err) {
+      throw err;
+    }
+  }
+  // 刪除單個 todo
+  deleteTodo() {
+    $(".list-todo")!.on("click", async (e: Event) => {
+      const isDeleteBtn =
+        e.target instanceof HTMLElement &&
+        e.target.classList.contains("btn-close");
+
+      if (isDeleteBtn) {
+        const id = e.target.parentElement!.id;
+
+        try {
+          await this.sendDeleteRequest(id);
+          this.showTodo(this.tab);
+        } catch (err) {
+          Swal.fire("刪除失敗", "發生錯誤，請稍後再試！", "error");
+        }
+      }
+    });
+  }
+  // 刪除已完成項目
+  clearDone() {
+    let isHandling = false; // 是否還在處理請求
+    let counter = 0; // 請求的完成次數
+    $(".btn-clear")!.on("click", (e: Event) => {
+      e.preventDefault();
+
+      if (isHandling) return;
+
+      const targets: TodoItemType[] = this.todoData.filter(
+        (item) => item.completed_at // 非 null 就是已完成
+      );
+
+      targets.forEach(async (item) => {
+        isHandling = true;
+        try {
+          await this.sendDeleteRequest(item.id);
+          this.showTodo(this.tab);
+          counter++;
+        } catch (err) {
+          Swal.fire("刪除失敗", "發生錯誤，請稍後再試！", "error");
+          return; // 如果有錯誤就跳過後續操作
+        }
+      });
+    });
+  }
 }
 
-// 請求行為的放這裡
-// 請求 todo 資料
-export async function getTodo() {
-  return await axios
-    .get(url, {
-      headers: { Authorization: auth },
-    })
-    .then((res: any) => {
-      todoData = res.data.todos;
-      return todoData;
-    })
-    .catch((err: any) => {
-      console.clear(); // 清除 axios 的報錯 防止 API 網址暴露
-      console.error(err.message);
-      alert("讀取資料時發生錯誤，請重新整理或稍後再試。");
-    });
-}
+// 型別定義
+type AddItemType = {
+  todo: {
+    content: string;
+  };
+};
 
-// 請求 todo 刪除
-async function deleteTodo(id: string) {
-  return await axios
-    .delete(url + id, {
-      headers: { Authorization: auth },
-    })
-    .then(() => showTodo(tab))
-    .catch(() => {
-      console.clear();
-      alert("刪除時發生錯誤，請稍後再試！");
-    });
-}
+type TodoItemType = {
+  id: string;
+  content: string;
+  completed_at: string | null;
+};
+
+type ResType = {
+  data: {
+    todos: TodoItemType[];
+  };
+};
+
+export default Todo;

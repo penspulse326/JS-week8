@@ -16,14 +16,14 @@ export default function formCheck(
     validationResult = validate(form, signupRule);
   }
 
-  $all(".input-alert").forEach((item) => (item.textContent = "")); // 清空警告訊息
+  $all(".input-alert")!.forEach((item) => (item.textContent = "")); // 清空警告訊息
 
   // 判斷 validate，若欄位有誤則抽取出來後在 DOM 顯示警告文字
   if (!validationResult) return true; // validate 的"真值"表示欄位"有誤"，"假值"為驗證通過
 
   Object.entries(validationResult).forEach((item) => {
     const [key, value] = item;
-    const input = $(`[name="${key}"]`, form); // 用 name 去選取指定的 input
+    const input = $(`[name="${key}"]`, form)!; // 用 name 去選取指定的 input
     const alertElement = input.nextElementSibling!;
 
     alertElement.textContent = value[0];
