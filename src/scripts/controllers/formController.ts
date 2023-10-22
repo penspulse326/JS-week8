@@ -6,11 +6,6 @@ const Swal = require("sweetalert2");
 
 // 登入請求
 async function sendLoginRequest(data: PostData) {
-  const repoUrl = "/js-week8";
-  //測試用url
-  // const path = window.location.pathname;
-  // const target = path === "/" ? "." : "..";
-
   try {
     return axios.post(process.env.API_LOGIN, data);
   } catch (err) {
@@ -20,16 +15,11 @@ async function sendLoginRequest(data: PostData) {
 
 // 登入行為
 async function login(data: PostData) {
-  const repoUrl = "/js-week8";
-  //測試用url
-  const path = window.location.pathname;
-  const target = path === "/" ? "." : "..";
-
   try {
     const res: ResData = await sendLoginRequest(data);
     setStorageItem("todoToken", res.headers.authorization);
     setStorageItem("nickname", res.data.nickname!);
-    navigate(`${target}/todo/`);
+    navigate(`/js-week8/todo/`);
   } catch (err: any) {
     Swal.fire(err.response.data.message, "電子信箱或密碼錯誤。", "error");
   }

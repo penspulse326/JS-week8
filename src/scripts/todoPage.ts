@@ -25,8 +25,7 @@ export default async function todoPage() {
   todo.clearDone();
 
   // 監聽登出
-  const logout: HTMLLinkElement = $(".btn-logout")!;
-  logout.addEventListener("click", (e: Event) => {
+  $(".btn-logout")!.on("click", (e: Event) => {
     e.preventDefault();
 
     clearStorage();

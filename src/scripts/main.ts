@@ -9,29 +9,14 @@ import todoPage from "./todoPage";
 const path = window.location.pathname;
 
 // 判斷是什麼頁面就執行對應的內容
-// switch (path) {
-//   case "/js-week8/":
-//     handleFormSubmit(".form-login");
-//     break;
-//   case "/js-week8/signup/":
-//     handleFormSubmit(".form-signup");
-//     break;
-//   case "/js-week8/todo/":
-//     todoPage();
-//     break;
-//   default:
-//     break;
-// }
-
-// 本機測試用 url
 switch (path) {
-  case "/":
+  case "/js-week8/":
     handleFormSubmit(".form-login");
     break;
-  case "/signup/":
+  case "/js-week8/signup/":
     handleFormSubmit(".form-signup");
     break;
-  case "/todo/":
+  case "/js-week8/todo/":
     todoPage();
     break;
   default:
