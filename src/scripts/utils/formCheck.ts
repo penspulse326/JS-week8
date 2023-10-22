@@ -1,78 +1,114 @@
+import { $, $all } from "./selector";
+
 const validate = require("validate.js");
 
-// 表單檢查 傳入 form 元素和 checkRule 字串
+// 處理表單檢查 回傳 boolean 表示檢查結果
 export default function formCheck(
   form: HTMLFormElement,
-  checkRule: string
+  formName: string
 ): boolean {
-  // 依照 checkRule 篩選要用哪個規則
-  const validationResult = validate(form, rules[checkRule]);
+  let validationResult: ValidateType = {};
 
-  // 先清空所有警告訊息
-  document.querySelectorAll(".input-alert").forEach((item) => {
-    item.textContent = "";
+  if (formName === ".form-login") {
+    validationResult = validate(form, loginRule);
+  }
+  if (formName === ".form-signup") {
+    validationResult = validate(form, signupRule);
+  }
+
+  $all(".input-alert").forEach((item) => (item.textContent = "")); // 清空警告訊息
+
+  // 判斷 validate，若欄位有誤則抽取出來後在 DOM 顯示警告文字
+  if (!validationResult) return true; // validate 的"真值"表示欄位"有誤"，"假值"為驗證通過
+
+  Object.entries(validationResult).forEach((item) => {
+    const [key, value] = item;
+    const input = $(`[name="${key}"]`, form); // 用 name 去選取指定的 input
+    const alertElement = input.nextElementSibling!;
+
+    alertElement.textContent = value[0];
   });
 
-  // validate 只回傳"有誤的"欄位，undefined 表示所有欄位無誤，驗證通過
-  if (validationResult === undefined) {
-    return true;
-  } else {
-    // 抽取 validate 回傳的欄位，注意 item 如果在參數列解構成 [key, value] 會沒辦法寫型別或斷言
-    Object.entries(validationResult).forEach((item) => {
-      const [key, value] = item as [string, string[]];
-      const input = form.querySelector(`[name="${key}"]`) as HTMLInputElement;
-      const alertElement = input.nextElementSibling!; // 警告文字在 input 的旁邊
-
-      alertElement.textContent = value[0];
-    });
-
-    return false;
-  }
+  return false;
 }
 
-// rules 包含 signup 規則與 login 規則
-const rules: { [key: string]: any } = {
-  // signup 規則
-  signup: {
+// 型別定義
+// 表單驗證結果
+type ItemsType = Record<string, string[]>;
+type ValidateType = undefined | ItemsType;
+
+// 驗證規則
+type MessageType = { message: string };
+type LengthType = { minimum: number; message: string };
+type EqualityType = { attribute: string; message: string };
+
+type LoginRuleType = {
+  email: {
+    presence: MessageType;
+    email: MessageType;
+  };
+  password: {
+    presence: MessageType;
+    length: LengthType;
+  };
+};
+
+type SignupRuleType = {
+  email: {
+    presence: MessageType;
+    email: MessageType;
+  };
+  nickname: {
+    presence: MessageType;
+  };
+  password: {
+    presence: MessageType;
+    length: LengthType;
+  };
+  passwordCheck: {
+    presence: MessageType;
+    equality: EqualityType;
+  };
+};
+
+const signupRule: SignupRuleType = {
+  email: {
+    presence: { message: "^此欄位不可為空" },
     email: {
-      presence: { message: "^此欄位不可為空" },
-      email: {
-        message: "格式錯誤",
-      },
-    },
-    nickname: {
-      presence: { message: "^欄位不可為空" },
-    },
-    password: {
-      presence: { message: "^此欄位不可為空" },
-      length: {
-        minimum: 6,
-        message: "^密碼需至少 6 個字",
-      },
-    },
-    passwordCheck: {
-      presence: { message: "^此欄位不可為空" },
-      equality: {
-        attribute: "password",
-        message: "^密碼不一致",
-      },
+      message: "格式錯誤",
     },
   },
-
-  // login 規則
-  login: {
-    email: {
-      presence: { message: "^此欄位不可為空" },
-      email: {
-        message: "格式錯誤",
-      },
+  nickname: {
+    presence: { message: "^欄位不可為空" },
+  },
+  password: {
+    presence: { message: "^此欄位不可為空" },
+    length: {
+      minimum: 6,
+      message: "^密碼需至少 6 個字",
     },
-    password: {
-      presence: { message: "^此欄位不可為空" },
-      length: {
-        minimum: 6,
-        message: "^密碼需至少 6 個字",
-      },
+  },
+  passwordCheck: {
+    presence: { message: "^此欄位不可為空" },
+    equality: {
+      attribute: "password",
+      message: "^密碼不一致",
+    },
+  },
+};
+
+const loginRule: LoginRuleType = {
+  email: {
+    presence: { message: "^此欄位不可為空" },
+    email: {
+      message: "格式錯誤",
+    },
+  },
+  password: {
+    presence: { message: "^此欄位不可為空" },
+    length: {
+      minimum: 6,
+      message: "^密碼需至少 6 個字",
     },
   },
 };
