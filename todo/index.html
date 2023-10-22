@@ -38,16 +38,16 @@
         class="relative section-todo hidden mx-auto mt-4 mb-8 rounded-[10px] bg-white shadow-2xl text-sm overflow-hidden z-10"
       >
         <ul class="tabs-todo flex w-full text-center font-bold cursor-pointer">
-          <li class="btn-todoTab-active">全部</li>
-          <li class="btn-todoTab-inactive">待完成</li>
-          <li class="btn-todoTab-inactive">已完成</li>
+          <li class="btn-todoTab-active" tab="all">全部</li>
+          <li class="btn-todoTab-inactive" tab="undone">待完成</li>
+          <li class="btn-todoTab-inactive" tab="done">已完成</li>
         </ul>
         <div class="px-4 lg:px-6">
           <ul class="list-todo flex flex-col gap-4 mt-6"></ul>
           <div class="flex justify-between my-8">
             <span class="todo-nums"></span>
             <a
-              class="btn-delete text-gray-400 hover:text-dark hover:font-bold duration-300"
+              class="btn-clear text-gray-400 hover:text-dark hover:font-bold duration-300"
               href="#"
               >清除已完成項目</a
             >

@@ -40,9 +40,9 @@ switch (path) {
 
 // 處理登入或註冊的表單行為
 function handleFormSubmit(formName: string): void {
-  const form: HTMLFormElement = $(formName);
+  const form: HTMLFormElement = $(formName)!;
 
-  form.addEventListener("submit", (e: Event) => {
+  form.on("submit", (e: Event) => {
     e.preventDefault();
 
     const isValidForm = formCheck(form, formName);
