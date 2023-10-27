@@ -3,7 +3,7 @@ export const $ = <T extends HTMLElement>(
   elementName: string,
   container?: T
 ): T | null => {
-  const element: T = document.querySelector(elementName)!;
+  const element: T = (container || document).querySelector(elementName)!;
 
   if (!element) return null;
 

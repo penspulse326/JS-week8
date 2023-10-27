@@ -18,7 +18,8 @@ class Todo {
   // 請求 todo 資料
   async getTodo() {
     try {
-      return axios.get(process.env.API_TODO, this.payload);
+      const response = await axios.get(process.env.API_TODO, this.payload);
+      return response;
     } catch (err) {
       throw err;
     }
@@ -56,7 +57,12 @@ class Todo {
   // 請求新增 todo
   async sendAddRequest(data: AddItemType) {
     try {
-      return axios.post(process.env.API_TODO, data, this.payload);
+      const response = await axios.post(
+        process.env.API_TODO,
+        data,
+        this.payload
+      );
+      return response;
     } catch (err) {
       throw err;
     }
@@ -91,11 +97,12 @@ class Todo {
   // 請求更改 todo 項目狀態
   async sendToggleRequest(id: string) {
     try {
-      return axios.patch(
+      const response = await axios.patch(
         `${process.env.API_TODO}/${id}/toggle`,
         {},
         this.payload
       );
+      return response;
     } catch (err) {
       throw err;
     }
@@ -139,7 +146,11 @@ class Todo {
   // 請求 todo 刪除
   async sendDeleteRequest(id: string) {
     try {
-      return await axios.delete(`${process.env.API_TODO}/${id}`, this.payload);
+      const response = await axios.delete(
+        `${process.env.API_TODO}/${id}`,
+        this.payload
+      );
+      return response;
     } catch (err) {
       throw err;
     }
