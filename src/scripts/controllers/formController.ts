@@ -7,7 +7,8 @@ const Swal = require("sweetalert2");
 // 登入請求
 async function sendLoginRequest(data: PostData) {
   try {
-    return axios.post(process.env.API_LOGIN, data);
+    const response = await axios.post(process.env.API_LOGIN, data);
+    return response;
   } catch (err) {
     throw err;
   }
@@ -40,7 +41,8 @@ export function loginController(form: HTMLFormElement) {
 // 註冊請求
 async function sendSignupRequest(data: PostData) {
   try {
-    return axios.post(process.env.API_SIGNUP, data);
+    const response = axios.post(process.env.API_SIGNUP, data);
+    return response;
   } catch (err) {
     throw err;
   }

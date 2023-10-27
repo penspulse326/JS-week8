@@ -1,11 +1,13 @@
 const axios = require("axios");
 
 // 檢查認證
-async function sendCheckRequest(token: string) {
+async function sendCheckAuthRequest(token: string) {
+  const configData: configDataType = {
+    headers: { Authorization: token },
+  };
   try {
-    return axios.get(process.env.API_CHECK, {
-      headers: { Authorization: token },
-    });
+    const response = await axios.get(process.env.API_CHECK, configData);
+    return response;
   } catch (err) {
     throw err;
   }
@@ -13,9 +15,13 @@ async function sendCheckRequest(token: string) {
 
 export default async function (token: string) {
   try {
-    const res = await sendCheckRequest(token);
+    const res = await sendCheckAuthRequest(token);
     return res.status === 200 ? true : false;
   } catch (err) {
     return false;
   }
 }
+
+type configDataType = {
+  headers: { Authorization: string };
+};
