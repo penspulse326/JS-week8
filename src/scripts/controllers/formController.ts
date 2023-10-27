@@ -59,7 +59,7 @@ export async function signupController(form: HTMLFormElement) {
   };
 
   try {
-    sendSignupRequest(data);
+    await sendSignupRequest(data);
     login(data);
   } catch (err: any) {
     Swal.fire(err.response.data.message, err.response.data.error[0], "error");
