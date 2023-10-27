@@ -60,6 +60,7 @@ export async function signupController(form: HTMLFormElement) {
 
   try {
     await sendSignupRequest(data);
+    delete data.user.nickname; // login API 後端會過濾格式不會忽略 nickname
     login(data);
   } catch (err: any) {
     Swal.fire(err.response.data.message, err.response.data.error[0], "error");
